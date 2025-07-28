@@ -33,12 +33,12 @@ Don't needlessly add template params. The default params on the module should be
 Try to provide default values for all parameters in the modules you write. Prefer parameters to 'hard-coding' values in the module, especially if they're repeated or can be expected to change.
 
 ## No hard coded property values that the user may want to change between deployment environments
-In the polytope.yml file, all values that may change between deployment environment should be dynamically loaded from Polytope secrets and values, e.g. all ports, hostnames, and protocols should be stored as Polytope values and all usernames, passwords and api keys should be stored as Polytope secrets. All property values specified in a ServiceSpec or EnvVarSpec should be referenced as Polytope values, e.g. port: "#pt-value api_port". Ensure that no property value inside of a ServiceSpec of EnvVarSpec is hard coded.
+In the polytope.yml file, all values that may change between deployment environment should be dynamically loaded from Polytope secrets and values, e.g. all ports, hostnames, and protocols should be stored as Polytope values and all usernames, passwords and api keys should be stored as Polytope secrets. All property values specified in a ServiceSpec or EnvVarSpec should be referenced as Polytope values, e.g. port: pt.value api_port. Ensure that no property value inside of a ServiceSpec of EnvVarSpec is hard coded.
 
 ## Hostnames
 The hostnames that web apps need, must be based on Polytope values, so they can be dynamically set to different values in deployment different environments.
 
-The Polytope service hostnames that are accessible internally within a template are not available to a web browser or any other software running outside of Polytope.
+The Polytope service hostnames that are accessible internally within a template are not available to a web browser or any other software running outside of Polytope. E.g. software that is not run by Polytope, such as the web browser, will be able to access the api running on the local machine at hostname 'localhost', not 'api', whereas software running in Polytope modules can access the api at the hostname 'api', not 'localhost'.
 
 ## In templates, don't provide `after` unless steps must wait for another step to complete
 **CRITICAL**: In a Polytope template that defines a stack of services, NEVER use `run-when: after` for services!
