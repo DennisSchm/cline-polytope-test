@@ -77,10 +77,24 @@ templates:
 ```
 
 ## Module inheritance
-Try to stick to the built-in modules. If there's no suitable module for what you're trying to achieve, create a custom module that calls `polytope/container`.
+Try to stick to the built-in modules. If there's no suitable module for what you're trying to achieve, create a custom module that calls `polytope/container`. 
+
+You can also call modules from `polytope.yml` files in subprojects by making use of the `include` keyword in the polytope file in the root like this: 
+
+```yml
+include: [
+  path/to/subproject/polytope/file
+]
+modules:
+...
+```
 
 ## Polytope file layout
-Prefer creating modules for the different execution units of your application, e.g. frontend, api, redpanda, etc. Avoid putting module data directly in templates if it makes sense to be able to run the module directly.
+Prefer creating modules for the different execution units of your application, e.g. redpanda, etc.
+
+Avoid putting module data directly in templates if it makes sense to be able to run the module directly.
+
+Be aware that when making use of the `create-component` module, the generated component directories will already contain their own polytope.yml file. After generating a component, update the root `polytope.yml` file to include that file (example: if you create a component `my-component`, add ` - my-component/polytope.yml` in the `include` block in `$repo_root/polytope.yml`).
 
 ## Write stuff to be run in Polytope
 Want to create a test script? Put it in a separate directory and create a module for it (is it a shell script? just use `polytope/container` with `image: alpine` or whatever). Ditto for any other runnable units of code!

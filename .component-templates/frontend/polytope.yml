@@ -4,7 +4,7 @@ modules:
       - id: cmd
         type: [default, str, ./bin/run] # default to the run script
       - id: api-base-url
-        type: [default, str, http://localhost:3000] # default backend URL
+        type: [default, str, http://localhost:3000] # the base URL where the browser accesses the API - must be localhost
       - id: port
         type: [default, int, 8000] # default port for the {{ project-name }}
     module: polytope/node

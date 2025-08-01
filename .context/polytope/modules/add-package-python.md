@@ -1,10 +1,10 @@
-# add-package-python Polytope Module
+# uv-add Polytope Module
 
 This module adds Python packages to a Python component using uv package manager.
 
 ## Usage
 
-Use the add-package-python Polytope module to install packages via:
+Use the uv-add Polytope module to install packages via:
 
 ```bash
 pt run --non-interactive "uv-add{packages: '<packages>', component-path: '<component-path>'}"

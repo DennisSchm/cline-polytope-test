@@ -1,10 +1,43 @@
 modules:
-  - id: {{ project-name }}
+  - id: {{ project-name }}-base
+    info: "'Base' module for other modules in this file to build on."
     module: polytope/python
     params:
       - id: cmd
         info: The command to run
-        type: [default, str, ./bin/run] # default to the run script
+        type: [default, str, bash] # default to the run script
+      - id: dev-mode
+        info: Whether to run in dev mode (with hot reload, debugging)
+        type: [default, bool, true]
+      - id: port
+        info: The port the API will run on
+        type: [default, int, 3000] # default port for the API
+      - id: expose
+        info: Whether to expose the app as a service.
+        type: [maybe, bool]
+      - id: restart
+        info: Optional restart policy for the container.
+        type: [maybe, {policy: [enum, always, on-failure], max-restarts: [maybe, int]}]
+    args:
+      id: {{ project-name }}
+      image: astral/uv:python3.12-bookworm-slim
+      code: { type: host, path: {{ path }} }
+      cmd: pt.param cmd
+      restart: pt.param restart
+      services: |-
+        #pt-js
+        params.expose && [{ id: "{{ project-name }}", ports: [{ protocol: "http", port: params.port, 'expose-as': params.port }] }];
+      env:
+        - { name: HTTP_PORT, value: pt.param port }
+        - { name: LOG_LEVEL, value: INFO }
+        - { name: HTTP_DEBUG, value: pt.param dev-mode }
+        - { name: HTTP_AUTORELOAD, value: pt.param dev-mode }
+      mounts:
+        - { path: /root/.cache/, source: { type: volume, scope: project, id: {{ project-name | kebab_case}}-dependency-cache } }
+  - id: {{ project-name }}
+    info: Runs the app.
+    module: {{ project-name }}-base
+    params:
       - id: dev-mode
         info: Whether to run in dev mode (with hot reload, debugging)
         type: [default, bool, true]
@@ -12,23 +45,14 @@ modules:
         info: The port the API will run on
         type: [default, int, 3000] # default port for the API
     args:
-      id: {{ project-name }}
-      image: astral/uv:python3.12-bookworm-slim
-      code: { type: host, path: {{ path }} }
       cmd: ./bin/run
-      restart:
-        policy: always
-      services:
-        - { id: {{ project-name }}, ports: [{protocol: http, port: pt.param port, expose-as: pt.param port}] }
-      env:
-        - { name: HTTP_PORT, value: pt.param port }
-        - { name: LOG_LEVEL, value: INFO }
-        - { name: HTTP_DEBUG, value: pt.param dev-mode" }
-        - { name: HTTP_AUTORELOAD, value: pt.param dev-mode" }
-      mounts:
-        - { path: /root/.cache/, source: { type: volume, scope: project, id: {{ project-name | kebab_case}}-dependency-cache } }
+      restart: {policy: always}
+      expose: true
+      port: pt.param port
+      dev-mode: pt.param dev-mode
   - id: {{ project-name }}-add
-    module: {{ project-name }}
+    info: Adds one or more packages to the pyproject.toml file.
+    module: {{ project-name }}-base
     params:
       - id: packages
         info: comma/whitespace-separated list of python packages to add to pyproject.toml

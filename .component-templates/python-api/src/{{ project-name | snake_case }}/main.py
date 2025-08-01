@@ -7,7 +7,6 @@ from .routes import router
 from . import conf
 
 logger = log.get_logger(__name__)
-app = FastAPI(title="API", version="0.1.0")
 
 def init():
     """Initializes the application."""
@@ -16,9 +15,9 @@ def init():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # init logic goes here
+    init()
     yield
     # clean-up logic goes here
-
 
 app = FastAPI(
     title="{{ project-name }}",
@@ -26,7 +25,7 @@ app = FastAPI(
     docs_url="/docs",
     lifespan=lifespan
 )
-app.include_router(router, prefix="/api")
+app.include_router(router)
 
 app.add_middleware(
     CORSMiddleware,
