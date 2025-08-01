@@ -1,0 +1,37 @@
+modules:
+  - id: {{ project-name }}
+    params:
+      - id: cmd
+        type: [default, str, ./bin/run] # default to the run script
+      - id: api-base-url
+        type: [default, str, http://localhost:3000] # default backend URL
+      - id: port
+        type: [default, int, 8000] # default port for the {{ project-name }}
+    module: polytope/node
+    args:
+      id: {{ project-name }}
+      image: oven/bun:slim # specify an image with bun
+      code: { type: host, path: {{ path }} } # mount the `{{ project-name }}` directory (assuming the code is there)
+      cmd: pt.param cmd
+      env:
+        - { name: PORT, value: pt.param port }
+        - { name: VITE_API_BASE_URL, value: pt.param api-base-url }
+      restart:
+        policy: always # always restart on failure
+      services:
+        - id: {{ project-name }}
+          ports: [{protocol: http, port: pt.param port, expose-as: pt.param port}]
+      mounts:
+        # Use volumes to cache dependencies:
+        - { path: /root/.cache/, source: { type: volume, id: {{ project-name | kebab_case}}-home-cache }}
+        - { path: /root/.bun/, source: { type: volume, id: {{ project-name | kebab_case}}-bun-cache }}
+        - { path: /app/node_modules/, source: { type: volume, id: {{ project-name | kebab_case}}-node-modules }}
+  - id: {{ project-name }}-add
+    module: {{ project-name }}
+    params:
+      - id: packages
+        info: comma/whitespace-separated list of python packages to add to pyproject.toml
+        type: str
+    args:
+      cmd: '#pt-js "bun add " + params.packages.replace(/[\s,]+/g, " ")'
+      
