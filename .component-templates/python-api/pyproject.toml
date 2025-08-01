@@ -1,11 +1,14 @@
 [project]
-name = "api"
+name = "{{ project-name | kebab_case }}"
 version = "0.1.0"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "fastapi==0.116.1",
+    "uvicorn[standard]==0.35.0",
+]
 
 [project.scripts]
-api = "api:main"
+app = "{{ project-name | snake_case }}.main:main"
 
 [build-system]
 requires = ["hatchling"]
