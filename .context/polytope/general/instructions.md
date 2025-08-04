@@ -1,4 +1,25 @@
 # Instructions to follow when generating code that should run on Polytope
+## NEVER use pt.value - ALWAYS use pt.param instead!
+**CRITICAL**: pt.value requires users to manually set values in a separate step, which is error-prone and inconvenient.
+ 
+❌ **WRONG**:
+```yml
+env: [{ name: RPK_BROKERS, value: "{pt.value redpanda-host}:{pt.value redpanda-port}" }]
+```
+
+✅ **CORRECT**:
+```yml
+params:
+  - id: redpanda-host
+    type: [default, str, redpanda]
+  - id: redpanda-port
+    type: [default, int, 9092]
+# ...
+env: [{ name: RPK_BROKERS, value: "{pt.param redpanda-host}:{pt.param redpanda-port}" }]
+```
+
+Values are global state shared between all runs. ALWAYS declare module params and use `pt.param` instead!
+For secrets, DO use `pt.secret` - but then you'll have to tell the user to set the secret via `pt secret set <secret-name> <value>` before running Polytope.
 
 ## Consice template section
 Make the template section of the polytope.yml file as short as possible. Define modules under the modules section or use pre-existing Polytope modules and refer to them from the template run section.
@@ -24,7 +45,7 @@ The Polytope service hostnames that are accessible internally within a template 
 Services that use `polytope/container` BLOCK until the container shuts down. Using `after` would mean waiting forever!
 
 ❌ **WRONG**:
-```yaml
+```yml
 run:
   - redpanda
   - module: api
@@ -33,7 +54,7 @@ run:
 ```
 
 ✅ **CORRECT**:
-```yaml
+```yml
 run:
   - redpanda
   - api  # Runs concurrently!
@@ -52,7 +73,7 @@ Ensure that all files to be executed are executable.
 **CRITICAL**: Services like databases, message queues, and caches MUST have persistent volumes or data will be lost on restart.
 
 ❌ **WRONG**:
-```yaml
+```yml
 templates:
   - id: stack
     run:
@@ -60,7 +81,7 @@ templates:
 ```
 
 ✅ **CORRECT**:
-```yaml
+```yml
 modules:
   - id: redpanda
     module: polytope/redpanda
@@ -94,13 +115,20 @@ Prefer creating modules for the different execution units of your application, e
 
 Avoid putting module data directly in templates if it makes sense to be able to run the module directly.
 
-Be aware that when making use of the `create-component` module, the generated component directories will already contain their own polytope.yml file. After generating a component, update the root `polytope.yml` file to include that file (example: if you create a component `my-component`, add ` - my-component/polytope.yml` in the `include` block in `$repo_root/polytope.yml`).
+## Using polytope/scaffold
+When using the `polytope/scaffold` module:
+- `template`: Points to the path where the template is stored (e.g., `.templates/python-api`, `.templates/frontend`)
+- `path`: Points to the directory where the new project will be created
+
+Example: `pt run --non-interactive "polytope/scaffold{template: '.templates/python-api', path: 'my-api'}"`
+
+Be aware that the generated component directories will already contain their own polytope.yml file. After generating a component, update the root `polytope.yml` file to include that file (example: if you create a component `my-component`, add ` - my-component/polytope.yml` in the `include` block in `$repo_root/polytope.yml`).
 
 ## Write stuff to be run in Polytope
 Want to create a test script? Put it in a separate directory and create a module for it (is it a shell script? just use `polytope/container` with `image: alpine` or whatever). Ditto for any other runnable units of code!
 
 If you have different commands in your app, create corresponding run scripts in `bin/` and create a specialized module, e.g.:
-```yaml
+```yml
 modules:
   - id: api
     module: polytope/python
