@@ -120,7 +120,7 @@ When using the `polytope/scaffold` module:
 - `template`: Points to the path where the template is stored (e.g., `.templates/python-api`, `.templates/frontend`)
 - `path`: Points to the directory where the new project will be created
 
-Example: `pt run --non-interactive "polytope/scaffold{template: '.templates/python-api', path: 'my-api'}"`
+Example: `pt run --raw "polytope/scaffold{template: '.templates/python-api', path: 'my-api'}"`
 
 Be aware that the generated component directories will already contain their own polytope.yml file. After generating a component, update the root `polytope.yml` file to include that file (example: if you create a component `my-component`, add ` - my-component/polytope.yml` in the `include` block in `$repo_root/polytope.yml`).
 
