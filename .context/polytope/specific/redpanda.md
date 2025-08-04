@@ -1,7 +1,5 @@
 # Documentation on how to use Redpanda in Polytope
-
 ## Running Redpanda
-
 ### Add the following code verbatim to the polytope.yml file
 <code type="yaml">
   - id: redpanda
@@ -17,8 +15,7 @@ Create your own module that wraps `polytope/redpanda`:
 A single-node redpanda cluster MUST be set up with persistent storage. 
 
 ## Running Redpanda Console
-
-Please run the `polytope/redpanda!console` module together with the redpanda server.
+Run the `polytope/redpanda!console` module together with the redpanda server.
 
 This defaults to connecting to the redpanda server running via `polytope/redpanda`, so there's no need to specify any args. Don't try to create a module wrapping this, you'll just trip yourself up.
 
@@ -28,31 +25,40 @@ Use the kafka-python package. Version: 2.2.15
 You must check that no python code uses any other version of the kafka-python package.
 
 ## Topic initialization and management
+### Redpanda-specific configuration
 Use the cillers-init module to manage Redpanda topics automatically.
-
 **See cillers-init.md for complete setup instructions.**
 
-### Redpanda-specific configuration
+#### Add the following code verbatim to the polytope.yml file
 <code type="yaml">
   - id: init
     info: Manages Redpanda topics and Couchbase buckets/scopes/collections
     module: polytope/container
+    params:
+      - id: environment
+        info: Sets the mode the application run in (dev, prod, test, etc.)
+        type: [default, str, dev]
+      - id: redpanda_host
+        info: Redpanda server hostname
+        type: [default, str, redpanda]
+      - id: redpanda_port
+        info: Port on which red panda service is exposed
+        type: [default, int, 9092]
     args:
       image: us-central1-docker.pkg.dev/arched-inkwell-420116/cillers-repo/cillers-init:latest
       id: init
       restart: { policy: on-failure, max-restarts: 3 }
       env:
-        - { name: ENVIRONMENT, value: pt.value environment }
+        - { name: ENVIRONMENT, value: pt.param environment }
         - { name: INIT_SERVICES, value: redpanda }
-        - { name: REDPANDA_HOST, value: pt.value redpanda_host }
-        - { name: REDPANDA_PORT, value: pt.value redpanda_port }
+        - { name: REDPANDA_HOST, value: pt.param redpanda_host }
+        - { name: REDPANDA_PORT, value: pt.param redpanda_port }
       mounts:
         - { path: /conf/init, source: { type: host, path: ./conf/init } }
         - { path: /root/.cache/, source: { type: volume, scope: project, id: dependency-cache } }
 </code>
 
 ### Required Configuration Files
-
 #### ./conf/init/redpanda.yaml
 Configure topics with environment-specific settings, e.g.:
 

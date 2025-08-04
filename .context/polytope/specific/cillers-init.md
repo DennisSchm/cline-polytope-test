@@ -1,9 +1,7 @@
 # Cillers Init Module Documentation
-
 The cillers-init module is a containerized initialization service that manages Couchbase and Redpanda infrastructure setup automatically.
 
 ## Overview
-
 The cillers-init image handles:
 - Couchbase cluster initialization
 - Bucket, scope, and collection management
@@ -12,46 +10,50 @@ The cillers-init image handles:
 - Connection handling and retry logic
 
 ## Docker Image
-
 The published Docker image is available at:
 ```
 us-central1-docker.pkg.dev/arched-inkwell-420116/cillers-repo/cillers-init:latest
 ```
 
 ## Basic Configuration
-
-### Add to polytope.yml
-
+### Module structure in polytope.yml
+Minimal setup for the service as polytope module without service specific variables:  
 <code type="yaml">
   - id: init
     info: Manages Redpanda topics and Couchbase buckets/scopes/collections
     module: polytope/container
+    params:
+      - id: environment
+        info: Sets the mode the application run in (dev, prod, test, etc.)
+        type: [default, str, dev] # The target environment (must be defined in env.yaml)
+      - id: init_services # Comma-separated list of services to initialize (e.g., "couchbase", "redpanda", "couchbase,redpanda")
+        info: Redpanda server hostname
+        type: [default, str, redpanda]
+      # Service-specific environment variables 
     args:
       image: us-central1-docker.pkg.dev/arched-inkwell-420116/cillers-repo/cillers-init:latest
       id: init
       restart: { policy: on-failure, max-restarts: 3 }
       env:
-        - { name: ENVIRONMENT, value: pt.value environment }
-        - { name: INIT_SERVICES, value: pt.value init_services }
-        # Service-specific environment variables (see service documentation)
+        - { name: ENVIRONMENT, value: pt.param environment }
+        - { name: INIT_SERVICES, value: pt.param init_services }
+        # Service-specific environment variables 
       mounts:
         - { path: /conf/init, source: { type: host, path: ./conf/init } }
         - { path: /root/.cache/, source: { type: volume, scope: project, id: dependency-cache } }
 </code>
 
 ## Environment Variables
-
-### Required
-- `ENVIRONMENT`: The target environment (must be defined in env.yaml)
-- `INIT_SERVICES`: Comma-separated list of services to initialize (e.g., "couchbase", "redpanda", "couchbase,redpanda")
-
 ### Service-Specific
 See individual service documentation for additional required environment variables:
-- Couchbase: COUCHBASE_HOST, COUCHBASE_USERNAME, COUCHBASE_PASSWORD, COUCHBASE_TLS
-- Redpanda: REDPANDA_HOST, REDPANDA_PORT
+
+Couchbase: COUCHBASE_HOST, COUCHBASE_USERNAME, COUCHBASE_PASSWORD, COUCHBASE_TLS
+Redpanda: REDPANDA_HOST, REDPANDA_PORT
+### Service-Specific Configuration Files
+`./conf/init/couchbase.yaml`: Bucket, scope, and collection definitions (see couchbase.md)
+`./conf/init/redpanda.yaml`: Topic definitions and configurations (see redpanda.md)
 
 ## Required Configuration Files
-
 The cillers-init module requires configuration files mounted at `/conf/init`:
 
 ### ./conf/init/env.yaml
@@ -70,7 +72,6 @@ environments:
 - `./conf/init/redpanda.yaml`: Topic definitions and configurations (see redpanda.md)
 
 ## Configuration Structure
-
 The cillers-init module uses a hierarchical configuration system:
 
 1. **Global Defaults**: Applied to all resources of a type
@@ -84,7 +85,6 @@ This allows for:
 - Easy maintenance and updates
 
 ## Deployment Notes
-
 - Include the init module in your template before the services it initializes
 - The module will exit successfully after completing initialization
 - Use `restart: { policy: on-failure, max-restarts: 3 }` for automatic retry on failures
