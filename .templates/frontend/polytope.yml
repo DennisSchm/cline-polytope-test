@@ -1,37 +1,71 @@
 modules:
-  - id: {{ project-name }}
+  - id: {{ project-name }}-base
+    info: "Base module for other modules in this file to build on."
+    module: polytope/node
     params:
+      - id: dev-mode
+        info: Whether to run in dev mode (with hot reload, debugging)
+        type: [default, bool, true]
       - id: cmd
+        info: The command to run
         type: [default, str, ./bin/run] # default to the run script
       - id: api-base-url
+        info: The base URL where the browser accesses the API
         type: [default, str, http://localhost:3000] # the base URL where the browser accesses the API - must be localhost
       - id: port
-        type: [default, int, 8000] # default port for the {{ project-name }}
-    module: polytope/node
+        info: The port the frontend will run on
+        type: [default, int, 8000] # default port for the frontend
+      - id: expose
+        info: Whether to expose the app as a service.
+        type: [maybe, bool]
+      - id: restart
+        info: Optional restart policy for the container.
+        type: [default, {policy: [enum, always, on-failure], max-restarts: [maybe, int]}, {policy: always}]
     args:
       id: {{ project-name }}
       image: oven/bun:slim # specify an image with bun
       code: { type: host, path: {{ path }} } # mount the `{{ project-name }}` directory (assuming the code is there)
       cmd: pt.param cmd
+      restart: pt.param restart
+      services: |-
+        #pt-js
+        params.expose && [{ id: "{{ project-name }}", ports: [{ protocol: "http", port: params.port, 'expose-as': params.port }] }];
       env:
         - { name: PORT, value: pt.param port }
         - { name: VITE_API_BASE_URL, value: pt.param api-base-url }
-      restart:
-        policy: always # always restart on failure
-      services:
-        - id: {{ project-name }}
-          ports: [{protocol: http, port: pt.param port, expose-as: pt.param port}]
+        - { name: LOG_LEVEL, value: INFO }
+        - { name: HTTP_DEBUG, value: pt.param dev-mode }
+        - { name: HTTP_AUTORELOAD, value: pt.param dev-mode }
       mounts:
         # Use volumes to cache dependencies:
-        - { path: /root/.cache/, source: { type: volume, id: {{ project-name | kebab_case}}-home-cache }}
-        - { path: /root/.bun/, source: { type: volume, id: {{ project-name | kebab_case}}-bun-cache }}
-        - { path: /app/node_modules/, source: { type: volume, id: {{ project-name | kebab_case}}-node-modules }}
+        - { path: /root/.cache/, source: { type: volume, scope: project, id: {{ project-name | kebab_case}}-home-cache }}
+        - { path: /root/.bun/, source: { type: volume, scope: project, id: {{ project-name | kebab_case}}-bun-cache }}
+        - { path: /app/node_modules/, source: { type: volume, scope: project, id: {{ project-name | kebab_case}}-node-modules }}
+  - id: {{ project-name }}
+    info: Runs the frontend app.
+    module: {{ project-name }}-base
+    params:
+      - id: dev-mode
+        info: Whether to run in dev mode (with hot reload, debugging)
+        type: [default, bool, true]
+      - id: api-base-url
+        info: The base URL where the browser accesses the API
+        type: [default, str, http://localhost:3000]
+      - id: port
+        info: The port the frontend will run on
+        type: [default, int, 8000]
+    args:
+      dev-mode: pt.param dev-mode
+      expose: true
+      port: pt.param port
+      api-base-url: pt.param api-base-url
   - id: {{ project-name }}-add
-    module: {{ project-name }}
+    info: Adds one or more packages to the package.json file.
+    module: {{ project-name }}-base
     params:
       - id: packages
-        info: comma/whitespace-separated list of python packages to add to pyproject.toml
+        info: space/comma-separated list of npm packages to add to package.json
         type: str
     args:
+      restart: {policy: on-failure, max-restarts: 3}
       cmd: '#pt-js "bun add " + params.packages.replace(/[\s,]+/g, " ")'
-      

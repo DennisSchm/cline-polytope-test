@@ -17,7 +17,7 @@ modules:
         type: [maybe, bool]
       - id: restart
         info: Optional restart policy for the container.
-        type: [maybe, {policy: [enum, always, on-failure], max-restarts: [maybe, int]}]
+        type: [default, {policy: [enum, always, on-failure], max-restarts: [maybe, int]}, {policy: always}]
     args:
       id: {{ project-name }}
       image: astral/uv:python3.12-bookworm-slim
@@ -46,7 +46,6 @@ modules:
         type: [default, int, 3000] # default port for the API
     args:
       cmd: ./bin/run
-      restart: {policy: always}
       expose: true
       port: pt.param port
       dev-mode: pt.param dev-mode
@@ -58,4 +57,5 @@ modules:
         info: comma/whitespace-separated list of python packages to add to pyproject.toml
         type: str
     args:
+      restart: {policy: on-failure, max-restarts: 3}
       cmd: '#pt-js "uv add " + params.packages.replace(/[\s,]+/g, " ")'
