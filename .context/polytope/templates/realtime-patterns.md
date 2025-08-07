@@ -1,18 +1,23 @@
-# Real-time Application Patterns
+<instructions>
+<title>Real-time Application Patterns</title>
 
-## CRITICAL: Event Loop Integration for Background Threads
+<critical_event_loop_integration>
+<section_title>CRITICAL: Event Loop Integration for Background Threads</section_title>
 
 When building real-time applications with FastAPI, WebSockets, and background message processing (e.g., Kafka consumers), you MUST properly integrate background threads with the main async event loop.
 
-### ❌ WRONG: Using asyncio.run() in Background Threads
+<wrong_approach>
+<subsection_title>❌ WRONG: Using asyncio.run() in Background Threads</subsection_title>
 <code language="python">
 # This creates an isolated event loop that cannot communicate with FastAPI's main loop
 def background_thread():
     for message in consumer:
         asyncio.run(websocket_manager.broadcast(message))  # WRONG!
 </code>
+</wrong_approach>
 
-### ✅ CORRECT: Using asyncio.run_coroutine_threadsafe()
+<correct_approach>
+<subsection_title>✅ CORRECT: Using asyncio.run_coroutine_threadsafe()</subsection_title>
 <code language="python">
 # Global reference to main event loop
 main_loop = None
@@ -34,10 +39,14 @@ def start_background_processing():
     thread = threading.Thread(target=background_thread, daemon=True)
     thread.start()
 </code>
+</correct_approach>
+</critical_event_loop_integration>
 
-## WebSocket Connection Management
+<websocket_management>
+<section_title>WebSocket Connection Management</section_title>
 
-### Safe Broadcasting with Connection Cleanup
+<safe_broadcasting>
+<subsection_title>Safe Broadcasting with Connection Cleanup</subsection_title>
 <code language="python">
 class ConnectionManager:
     def __init__(self):
@@ -59,8 +68,10 @@ class ConnectionManager:
             if connection in self.active_connections:
                 self.active_connections.remove(connection)
 </code>
+</safe_broadcasting>
 
-### Lazy Background Service Initialization
+<lazy_initialization>
+<subsection_title>Lazy Background Service Initialization</subsection_title>
 <code language="python">
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -76,10 +87,14 @@ async def websocket_endpoint(websocket: WebSocket):
     except WebSocketDisconnect:
         manager.disconnect(websocket)
 </code>
+</lazy_initialization>
+</websocket_management>
 
-## Message Queue Integration Patterns
+<message_queue_patterns>
+<section_title>Message Queue Integration Patterns</section_title>
 
-### Kafka Consumer with WebSocket Broadcasting
+<kafka_consumer_pattern>
+<subsection_title>Kafka Consumer with WebSocket Broadcasting</subsection_title>
 <code language="python">
 def kafka_consumer_thread():
     """Consume from Kafka and broadcast via WebSocket"""
@@ -105,8 +120,10 @@ def kafka_consumer_thread():
             logger.error(f"Kafka consumer error: {e}")
             time.sleep(5)  # Retry after delay
 </code>
+</kafka_consumer_pattern>
 
-### Resilient Message Publishing
+<resilient_publishing>
+<subsection_title>Resilient Message Publishing</subsection_title>
 <code language="python">
 @router.post("/messages")
 async def create_message(message: MessageCreate):
@@ -125,12 +142,19 @@ async def create_message(message: MessageCreate):
     
     return stored_message
 </code>
+</resilient_publishing>
+</message_queue_patterns>
 
-## Common Mistakes to Avoid
+<common_mistakes>
+<section_title>Common Mistakes to Avoid</section_title>
 
+<mistake_list>
 1. **Never use `asyncio.run()` in background threads** - it creates isolated event loops
 2. **Always use `run_coroutine_threadsafe()`** to schedule coroutines from threads
 3. **Initialize background services lazily** - wait for main event loop to be available
 4. **Handle broken WebSocket connections safely** - avoid modifying lists during iteration
 5. **Make message publishing non-blocking** - don't fail API requests if queue is down
 6. **Use proper connection cleanup** - remove dead connections to prevent memory leaks
+</mistake_list>
+</common_mistakes>
+</instructions>

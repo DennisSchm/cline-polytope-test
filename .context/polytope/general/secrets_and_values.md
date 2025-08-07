@@ -1,15 +1,22 @@
-# Documentation for Polytope secrets and values
+<overview>
+<title>Documentation for Polytope secrets and values</title>
 
-Polytope supports setting and reading secrets and values. 
+Polytope supports setting and reading secrets and values.
+</overview>
 
-## Secrets and values are set using the polytope CLI as follows.  
+<cli_commands>
+<section_title>Secrets and values are set using the polytope CLI as follows</section_title>
 
-### pt secret set --help          
+<secret_set_command>
+<subsection_title>pt secret set --help</subsection_title>
 Sets the value of a secret.
 
+<usage>
 USAGE
   $ pt secrets set [<secret-id>] [<data>] [optional flags]
+</usage>
 
+<description>
 DESCRIPTION
 --  Sets the value of a secret.
   Overwrites the value if it already exists.
@@ -18,7 +25,9 @@ DESCRIPTION
   following methods:
    - stdin (in combination with the `--stdin` flag)
    - a file (in combination with the `--file` flag)
+</description>
 
+<command_options>
 COMMAND OPTIONS
   -c, --context=<context>          Runs as a specific user against a specific Polytope instance.
   -f, --file=<path>                Reads a secret specification from a YAML/JSON/EDN file.
@@ -26,20 +35,28 @@ COMMAND OPTIONS
       --pretty                     Pretty-prints output when supported [default: true].
   -r, --raw                        If the data is a string, number, or boolean, prints it as a raw string.
       --stdin                      If selected, reads a secret specification in YAML/JSON/EDN format from stdin.
+</command_options>
 
+<global_options>
 GLOBAL OPTIONS
       --config-file=<path>   CLI config file path [default: ~/.config/polytope/config.yaml].
   -h, --help                 Prints help for the command.
       --log-file=<path>      Log printing file path [default: ~/.local/state/polytope/cli.log].
   -v, --verbose              Enables log printing in terminal. Raises level of detail in log file.
       --version              Prints the current CLI version.
+</global_options>
+</secret_set_command>
 
-### pt value set --help.
+<value_set_command>
+<subsection_title>pt value set --help.</subsection_title>
 Sets the value of a value.
 
+<usage>
 USAGE
   $ pt values set [<value-id>] [<data>] [optional flags]
+</usage>
 
+<description>
 DESCRIPTION
   Sets the value of a value.
   Overwrites the value if it already exists.
@@ -48,7 +65,9 @@ DESCRIPTION
   following methods:
    - stdin (in combination with the `--stdin` flag)
    - a file (in combination with the `--file` flag)
+</description>
 
+<command_options>
 COMMAND OPTIONS
   -c, --context=<context>          Runs as a specific user against a specific Polytope instance.
   -f, --file=<path>                Reads a value specification from a YAML/JSON/EDN file.
@@ -56,18 +75,25 @@ COMMAND OPTIONS
       --pretty                     Pretty-prints output when supported [default: true].
   -r, --raw                        If the data is a string, number, or boolean, prints it as a raw string.
       --stdin                      If selected, reads a value specification in YAML/JSON/EDN format from stdin.
+</command_options>
 
+<global_options>
 GLOBAL OPTIONS
       --config-file=<path>   CLI config file path [default: ~/.config/polytope/config.yaml].
   -h, --help                 Prints help for the command.
       --log-file=<path>      Log printing file path [default: ~/.local/state/polytope/cli.log].
   -v, --verbose              Enables log printing in terminal. Raises level of detail in log file.
       --version              Prints the current CLI version.
+</global_options>
+</value_set_command>
+</cli_commands>
 
-
-## Secrets and values are dereferenced in the polytope.yml file as follows
+<usage_in_polytope_yml>
+<section_title>Secrets and values are dereferenced in the polytope.yml file as follows</section_title>
 
 The value of a map pair can be specified as the data for a value or a secret. E.g. 
+
+<example>
 <code language="yaml">
 modules: 
     ...
@@ -101,14 +127,18 @@ modules:
       ...
       cmd: "topic create {pt.value redpanda-topics}"
 </code>
-          
+</example>
+</usage_in_polytope_yml>
 
-        
-## Sample executable file with default values and secrets
+<default_values_file>
+<section_title>Sample executable file with default values and secrets</section_title>
 
+<instructions>
 Store all default values and secrets in an executable file `.values_and_secrets.defaults.sh`. This file should contain 
 set commands for all values and secrets that are referenced in the polytope.yml file with default values. 
 
 This enables the user to execute that file to set all values and secrets when initializing the project on a new machine. 
 
 Make sure the .secrets_and_values.sh file pattern is added to the .gitignore file, so the user can store real secrets and local variables that should not be checked in in that file.
+</instructions>
+</default_values_file>

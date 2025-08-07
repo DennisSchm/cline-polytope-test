@@ -1,6 +1,13 @@
+<overview>
+<title>Built-in Polytope Modules</title>
 This file contains module definitions for some built-in Polytope modules. Use these if you can.
+</overview>
 
-# polytope/redpanda
+<redpanda_modules>
+<module_group>Redpanda Modules</module_group>
+
+<redpanda_main>
+<module_name>polytope/redpanda</module_name>
 
 <code language="yaml">
 info: Runs a single Redpanda node in dev mode.
@@ -59,8 +66,10 @@ args:
     - {port: 9644, protocol: http, label: admin-api}
     - {port: 33145, protocol: tcp, label: rpc}
 </code>
+</redpanda_main>
 
-# polytope/redpanda!console
+<redpanda_console>
+<module_name>polytope/redpanda!console</module_name>
 
 <code language="yaml">
 info: Runs the Redpanda console.
@@ -159,8 +168,10 @@ args:
     ports:
     - {port: pt.param port, protocol: http}
 </code>
+</redpanda_console>
 
-# polytope/redpanda!connect
+<redpanda_connect>
+<module_name>polytope/redpanda!connect</module_name>
 
 <code language="yaml">
 info: Runs Redpanda connect.
@@ -199,8 +210,14 @@ args:
     ports:
     - {port: pt.param port, protocol: http}
 </code>
+</redpanda_connect>
+</redpanda_modules>
 
-# polytope/postgres
+<database_modules>
+<module_group>Database Modules</module_group>
+
+<postgres_main>
+<module_name>polytope/postgres</module_name>
 
 <code language="yaml">
 info: Runs a PostgreSQL container.
@@ -268,8 +285,10 @@ args:
     ports:
     - {protocol: tcp, port: 5432}
 </code>
+</postgres_main>
 
-# polytope/postgres!simple
+<postgres_simple>
+<module_name>polytope/postgres!simple</module_name>
 
 <code language="yaml">
 info: Runs a PostgreSQL container with minimal configuration.
@@ -316,8 +335,14 @@ args:
     ports:
     - {protocol: tcp, port: 5432}
 </code>
+</postgres_simple>
+</database_modules>
 
-# polytope/python
+<language_modules>
+<module_group>Language Runtime Modules</module_group>
+
+<python_main>
+<module_name>polytope/python</module_name>
 
 <code language="yaml">
 info: Runs a Python container.
@@ -404,8 +429,10 @@ args:
   restart: pt.param restart
   workdir: /app
 </code>
+</python_main>
 
-# polytope/python!simple
+<python_simple>
+<module_name>polytope/python!simple</module_name>
 
 <code language="yaml">
 info: Runs a Python container with minimal configuration.
@@ -453,8 +480,105 @@ args:
       [{:path "/requirements", :source reqs}])))
   workdir: /app
 </code>
+</python_simple>
 
-# polytope/container
+<node_main>
+<module_name>polytope/node</module_name>
+
+<code language="yaml">
+info: Runs a Node.js container.
+id: node
+params:
+- id: image
+  info: The container image to use.
+  name: Image
+  type: [default, str, 'public.ecr.aws/docker/library/node:21.7.0-slim']
+- id: code
+  info: Optional source code directory to mount into the container.
+  name: Code
+  type: [maybe, mount-source]
+- id: cmd
+  info: The command to run. Runs a Node shell if left blank.
+  name: Command
+  type:
+  - maybe
+  - - either
+    - str
+    - [str]
+- id: env
+  info: Environment variables for the container.
+  name: Environment variables
+  type:
+  - maybe
+  - - name: str
+      value: [either, str, int, bool]
+- id: id
+  info: The container's ID/name.
+  name: ID
+  type: [maybe, id]
+- id: package
+  info: Optional package.json file to install before running the command.
+  name: Package file
+  type: [maybe, mount-source]
+- id: mounts
+  info: Additional files or directories to mount into the container.
+  name: Mounts
+  type:
+  - maybe
+  - - - maybe
+      - {source: mount-source, path: absolute-path}
+- id: restart
+  info: What policy to apply on restarting containers that fail.
+  name: Restart policy
+  type:
+  - maybe
+  - policy: [enum, always, on-failure]
+    max-restarts: [maybe, int]
+- id: services
+  info: Ports in the container to expose as services.
+  name: Services
+  type:
+  - maybe
+  - [service-spec]
+module: polytope/container
+args:
+  cmd: |-
+    #pt-clj (if (:package params)
+      (if (or
+           (nil? (:cmd params))
+           (string? (:cmd params)))
+        (str
+         "sh -c 'npm install /package.json; "
+         (or (:cmd params) "node")
+         "'")
+        (str
+         "sh -c 'npm install /package.json; "
+         (str/join " " (:cmd params))
+         "'"))
+      (:cmd params))
+  env: pt.param env
+  services: pt.param services
+  image: pt.param image
+  id: pt.param id
+  mounts: |-
+    #pt-clj (vec
+     (concat
+     (when-let [code (:code params)]
+      [{:path "/app", :source code}])
+     (when-let [reqs (:package params)]
+      [{:path "/package.json", :source reqs}])
+     (:mounts params)))
+  restart: pt.param restart
+  workdir: /app
+</code>
+</node_main>
+</language_modules>
+
+<core_modules>
+<module_group>Core Container Module</module_group>
+
+<container_main>
+<module_name>polytope/container</module_name>
 
 <code language="yaml">
 info: Runs a Docker container.
@@ -579,92 +703,5 @@ code: |-
        :type         "container-path"}
        sink)))
 </code>
-
-# polytope/node
-
-<code language="yaml">
-info: Runs a Node.js container.
-id: node
-params:
-- id: image
-  info: The container image to use.
-  name: Image
-  type: [default, str, 'public.ecr.aws/docker/library/node:21.7.0-slim']
-- id: code
-  info: Optional source code directory to mount into the container.
-  name: Code
-  type: [maybe, mount-source]
-- id: cmd
-  info: The command to run. Runs a Node shell if left blank.
-  name: Command
-  type:
-  - maybe
-  - - either
-    - str
-    - [str]
-- id: env
-  info: Environment variables for the container.
-  name: Environment variables
-  type:
-  - maybe
-  - - name: str
-      value: [either, str, int, bool]
-- id: id
-  info: The container's ID/name.
-  name: ID
-  type: [maybe, id]
-- id: package
-  info: Optional package.json file to install before running the command.
-  name: Package file
-  type: [maybe, mount-source]
-- id: mounts
-  info: Additional files or directories to mount into the container.
-  name: Mounts
-  type:
-  - maybe
-  - - - maybe
-      - {source: mount-source, path: absolute-path}
-- id: restart
-  info: What policy to apply on restarting containers that fail.
-  name: Restart policy
-  type:
-  - maybe
-  - policy: [enum, always, on-failure]
-    max-restarts: [maybe, int]
-- id: services
-  info: Ports in the container to expose as services.
-  name: Services
-  type:
-  - maybe
-  - [service-spec]
-module: polytope/container
-args:
-  cmd: |-
-    #pt-clj (if (:package params)
-      (if (or
-           (nil? (:cmd params))
-           (string? (:cmd params)))
-        (str
-         "sh -c 'npm install /package.json; "
-         (or (:cmd params) "node")
-         "'")
-        (str
-         "sh -c 'npm install /package.json; "
-         (str/join " " (:cmd params))
-         "'"))
-      (:cmd params))
-  env: pt.param env
-  services: pt.param services
-  image: pt.param image
-  id: pt.param id
-  mounts: |-
-    #pt-clj (vec
-     (concat
-     (when-let [code (:code params)]
-      [{:path "/app", :source code}])
-     (when-let [reqs (:package params)]
-      [{:path "/package.json", :source reqs}])
-     (:mounts params)))
-  restart: pt.param restart
-  workdir: /app
-</code>
+</container_main>
+</core_modules>
