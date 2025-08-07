@@ -42,7 +42,7 @@ The contents of the polytope.yml file must follow the schema `PolytopeFile` from
 The Polytope file has the top-level keys `modules` and `templates`:
 - `modules` is a list of module declarations. Modules are encapsulated, reusable snippets of code that take a (possibly empty) set of arguments, and either call another module, or run a snippet of code. Typically modules perform some simple task, like running a container.
 - `templates` is a list of template declarations. Each template declaration is a list of module calls. Possibly with ordering dependencies. Templates can also take arguments.
-- `include` is a list of polytope files in subdirectories to include. The `templates` and `modules` from these files will be merged with the `templates` and `modules` declared in the 'calling' polytope file.
+- `include` is a list of subdirectories or polytope files to include. When a subdirectory is provided, Polytope will scan that subdirectory for a `polytope.yml` file to include. The `template` and `module` from these files will be merged with the `template` and `module` declared in the 'calling' polytope file.
 
 ### `modules`
 `modules` holds a list of module specs. These specs must adhere to the `ModuleSpec` type in the definitions file.
