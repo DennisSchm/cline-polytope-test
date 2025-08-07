@@ -1,0 +1,14 @@
+modules:
+  - id: redpanda
+    info: |
+      Runs a single Redpanda instance in dev mode.
+      Uses the persistent volume `redpanda-data-{{ project-name }}`.
+      Exposes the Redpanda API port on `redpanda:9092` within the job, and at `localhost:9092` on the host.
+    module: polytope/redpanda
+    args:
+      data-volume: { id: redpanda-data-{{ project-name }}, type: volume, scope: project }
+  - id: redpanda-console
+    info: |
+      Runs Redpanda Console against `redpanda:9092` (used by the `redpanda` module).
+      Exposes the Console UI at `localhost:8080` on the host.
+    module: polytope/redpanda!console
