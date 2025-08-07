@@ -49,3 +49,5 @@ pt run --raw "{component-name}-add{packages: 'package-name'}"
 
 ## Specific packages to use
 For api servers, use fastapi with uvicorn.
+
+For real-time applications with WebSockets and message queues, see the **Real-time Application Patterns** guide in `.context/polytope/templates/realtime-patterns.md` for critical event loop integration patterns.

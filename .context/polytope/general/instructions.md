@@ -66,6 +66,9 @@ All services must be fault-tolerant and handle connection failures gracefully wi
 ## Any services you write must be fault tolerant
 Don't assume that other services are always up and running. If a service is not available, your service should handle the error gracefully and retry later. This applies to all services, including databases, message queues, and other dependencies.
 
+## Real-time applications require special patterns
+For applications using WebSockets, background threads, and message queues (like Kafka/Redpanda), refer to the **Real-time Application Patterns** guide in `.context/polytope/templates/realtime-patterns.md`. This covers critical event loop integration patterns to avoid common mistakes like using `asyncio.run()` in background threads.
+
 ## Executables
 Ensure that all files to be executed are executable.
 
