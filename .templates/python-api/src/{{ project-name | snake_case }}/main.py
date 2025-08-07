@@ -48,6 +48,5 @@ def main() -> None:
         host=http_conf.host,
         port=http_conf.port,
         reload=http_conf.autoreload,
-        log_level="debug" if http_conf.debug else "info",
         log_config=None
     )

@@ -10,7 +10,6 @@ logger = log.get_logger(__name__)
 class HttpServerConf(BaseModel):
     host: str
     port: int
-    debug: bool
     autoreload: bool
 
 #### Env Vars ####
@@ -24,13 +23,6 @@ LOG_LEVEL = EnvVarSpec(id="LOG_LEVEL", default="INFO")
 HTTP_HOST = EnvVarSpec(id="HTTP_HOST", default="0.0.0.0")
 
 HTTP_PORT = EnvVarSpec(id="HTTP_PORT", default="8000")
-
-HTTP_DEBUG = EnvVarSpec(
-    id="HTTP_DEBUG",
-    parse=lambda x: x.lower() == "true",
-    default="false",
-    type=(bool, ...),
-)
 
 HTTP_AUTORELOAD = EnvVarSpec(
     id="HTTP_AUTORELOAD",
@@ -46,7 +38,6 @@ def validate() -> bool:
         [
             LOG_LEVEL,
             HTTP_PORT,
-            HTTP_DEBUG,
             HTTP_AUTORELOAD,
         ]
     )
@@ -60,6 +51,5 @@ def get_http_conf() -> HttpServerConf:
     return HttpServerConf(
         host=env.parse(HTTP_HOST),
         port=env.parse(HTTP_PORT),
-        debug=env.parse(HTTP_DEBUG),
         autoreload=env.parse(HTTP_AUTORELOAD),
     )

@@ -30,7 +30,6 @@ modules:
       env:
         - { name: HTTP_PORT, value: pt.param port }
         - { name: LOG_LEVEL, value: INFO }
-        - { name: HTTP_DEBUG, value: pt.param dev-mode }
         - { name: HTTP_AUTORELOAD, value: pt.param dev-mode }
       mounts:
         - { path: /root/.cache/, source: { type: volume, scope: project, id: {{ project-name | kebab_case}}-dependency-cache } }
