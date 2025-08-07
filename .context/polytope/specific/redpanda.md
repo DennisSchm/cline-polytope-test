@@ -7,15 +7,16 @@ When configuring and running redpanda as described in this documentation, it run
 Use the redpanda template to automatically generate pre-configured redpanda components. This eliminates the need to manually configure redpanda modules in the root polytope file.
 
 ### Generate a Redpanda Component
-Use the polytope scaffold command with the redpanda template:
+Execute the following command in the terminal to use the polytope scaffold command with the redpanda template:
+`pt run --raw "polytope/scaffold{template: '.templates/redpanda', path: 'redpanda'}"`
 
-```bash
-pt run --raw "polytope/scaffold{template: '.templates/redpanda', path: 'redpanda'}"
-```
+#### Examples
 
-Examples:
-- Server component: `pt run --raw "polytope/scaffold{template: '.templates/redpanda', path: 'redpanda'}"`
-- Another server: `pt run --raw "polytope/scaffold{template: '.templates/redpanda', path: 'server'}"`
+Server component 
+`pt run --raw "polytope/scaffold{template: '.templates/redpanda', path: 'redpanda'}"`
+
+Another server
+`pt run --raw "polytope/scaffold{template: '.templates/redpanda', path: 'server'}"`
 
 The generated component includes:
 - Pre-configured `polytope.yml` file with redpanda and redpanda console modules

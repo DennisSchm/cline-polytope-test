@@ -11,7 +11,7 @@ When asked to create a Python component as part of a larger task:
 ## Creating the component
 **CRITICAL**: ALWAYS make sure that the template argument points inside the `.templates/` directory!
 
-Use the build-in `polytope/scaffold` module to create a starting project via:
+Execute the following command in the terminal to use the build-in `polytope/scaffold` module to create a starting project via:
 `pt run --raw "polytope/scaffold{template: '.templates/python-api', path: 'my-component-name'}"`
 
 **Parameter explanation:**
@@ -19,8 +19,12 @@ Use the build-in `polytope/scaffold` module to create a starting project via:
 - `path`: Points to the directory where the new project will be created
 
 ### Examples:
-- API component: `pt run --raw "polytope/scaffold{template: '.templates/python-api', path: 'api'}"`
-- Another API: `pt run --raw "polytope/scaffold{template: '.templates/python-api', path: 'backend'}"`
+
+API component
+`pt run --raw "polytope/scaffold{template: '.templates/python-api', path: 'api'}"`
+
+Another API
+`pt run --raw "polytope/scaffold{template: '.templates/python-api', path: 'backend'}"`
 
 ## Adding packages to Python components
 Each Python component created with the template includes a custom `{component-name}-add` module for adding packages.
@@ -28,14 +32,21 @@ Each Python component created with the template includes a custom `{component-na
 **IMPORTANT**: The add module is only available AFTER the component has been generated and the main polytope.yml includes the component's polytope.yml file.
 
 **Usage:**
-```bash
-pt run --raw "{component-name}-add{packages: 'package-name'}"
-```
+Execute the following command in the terminal to add packages to template project.
 
-**Examples:**
-- For an 'api' component: `pt run --raw "api-add{packages: 'kafka-python'}"`
-- For a 'backend' component: `pt run --raw "backend-add{packages: 'redis'}"`
-- Multiple packages: `pt run --raw "api-add{packages: 'kafka-python requests'}"`
+`pt run --raw "{component-name}-add{packages: 'package-name'}"`
+
+#### Examples
+Execute the following commands in the terminal to add packages to your api project.
+
+For an 'api' component
+`pt run --raw "api-add{packages: 'kafka-python'}"`
+
+For a 'backend' component
+`pt run --raw "backend-add{packages: 'redis'}"`
+
+Multiple packages
+`pt run --raw "api-add{packages: 'kafka-python requests'}"`
 
 **IMPORTANT:** 
 - Do NOT specify package versions unless specifically requested by the user

@@ -56,7 +56,7 @@ The following keys are supported when defining a module:
 - `code`: Only provided for modules that run code directly. Not compatible with `args` or `module`. Inline code written in Clojure or JavaScript that runs against the module API.
 
 #### Example
-```
+<code language="yaml">
 # Basic module that prints a user-defined message with a default value:
 info: Prints a message to the logs.
 id: hello-world
@@ -121,7 +121,7 @@ args:
   services:
   - id: pt.param service-id
     ports: [{protocol: tcp, port: 5432}]
-```
+</code>
 
 #### params
 Module parameters are declared via the `params` key, which must be a list of `ParamSpec`. If this key is not present, the module has no parameters.
@@ -132,7 +132,7 @@ Module parameters are declared via the `params` key, which must be a list of `Pa
 - `ìnfo`: Optional info string about the param.
 
 ##### Example
-```
+<code language="yaml">
 params:
   - id: foo
     type: [default, {foo: str}, {foo: bar}] # has a default value so does not need to be provided
@@ -140,7 +140,7 @@ params:
   - type: [maybe, str] # optional parameter, can be omitted
   - id: env-vars
     type: [env-var] # a list of environment variables - no default or maybe, so must be provided
-```
+</code>
 
 #### args
 When a module calls another module, it passes values for parameters via the `args` key.
@@ -156,7 +156,7 @@ Values can be supplied in multiple different ways:
 Arg values can be any data but _MUST_ match the type spec of the corresponding param in the referenced module.
 
 #### Example
-```
+<code language="yaml">
 module: the-module-were-calling  # module defined elsewhere, with params matching the args below
 args:
     some-string-param: "hello world"      # plain string
@@ -166,7 +166,7 @@ args:
     some-param-3:
         foo: "interpolated string with a value: {pt.value foo}"
         bar: [pt.param bar, pt.secret baz] # data with inline references
-```
+</code>
 
 #### Param type DSL
 
@@ -213,14 +213,14 @@ The following keys are supported when defining a template:
 Steps may be provided in one of the following ways:
 
 Plain module references, with no arguments:
-```yaml
+<code language="yaml">
 run:
   - my-module
   - polytope/hello-world
-```
+</code>
 
 Or with arguments:
-```yaml
+<code language="yaml">
 run:
   - module: my-module
     args:
@@ -229,10 +229,10 @@ run:
   - module: polytope/hello-world
     args:
       message: "Hello, world!"
-```
+</code>
 
 By default, steps get their ID from the module ID. If you want to override this, you can specify the `id` key:
-```yaml
+<code language="yaml">
 run:
   - id: hello-world
     module: polytope/hello-world
@@ -242,10 +242,10 @@ run:
     module: polytope/hello-world
     args:
       message: "Aiya Ambar!"
-```
+</code>
 
 Steps run in parallel by default, but sequencing can be enforced by using `run-when`:
-```yaml
+<code language="yaml">
 run:
   - id: hello-world
     module: polytope/container
@@ -258,4 +258,4 @@ run:
       message: "Hello world again!"
     run-when:
       after: hello-world # this step will run after the hello-world step, _INCLUDING THE ASSOCIATED CONTAINER_ completes
-```
+</code>

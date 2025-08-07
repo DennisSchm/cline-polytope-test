@@ -29,7 +29,7 @@ When running a couchbase module you also need to run the cillers-init module for
 **See cillers-init.md for complete setup instructions.**
 
 ### Couchbase-specific configuration
-<code type="yaml">
+<code language="yaml">
   - id: init
     info: Manages Redpanda topics and Couchbase buckets/scopes/collections
     module: polytope/container
@@ -54,7 +54,7 @@ When running a couchbase module you also need to run the cillers-init module for
 #### ./conf/init/couchbase.yaml
 Configure buckets, scopes, and collections with environment-specific settings, e.g.:
 
-<file path="./conf/init/couchbase.yaml">
+<code language="yaml" path="./conf/init/couchbase.yaml">
 bucket_defaults:  # For all buckets
   ram_quota_mb: 100
   bucket_type: couchbase
@@ -111,7 +111,7 @@ buckets:
       _default:
         collections:
           _default: {}  # No settings; uses collection_defaults
-</file>
+</code>
 
 **Configuration Structure:**
 - `bucket_defaults`: Global settings applied to all buckets

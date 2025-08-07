@@ -28,14 +28,21 @@ Each React component created with the template includes a custom `{component-nam
 **IMPORTANT**: The add module is only available AFTER the component has been generated and the main polytope.yml includes the component's polytope.yml file.
 
 **Usage:**
-```bash
-pt run --raw "{component-name}-add{packages: 'package-name'}"
-```
+Execute the following command in the terminal to add packages to your frontend app.
 
-**Examples:**
-- For a 'frontend' component: `pt run --raw "frontend-add{packages: 'axios'}"`
-- For a 'web-app' component: `pt run --raw "web-app-add{packages: 'react-query'}"`
-- Multiple packages: `pt run --raw "frontend-add{packages: 'axios react-query'}"`
+`pt run --raw "{component-name}-add{packages: 'package-name'}"`
+
+### Examples
+Execute the following command in the terminal to add packages to your frontend app.
+
+For a 'frontend' component
+`pt run --raw "frontend-add{packages: 'axios'}"`
+
+For a 'web-app' component
+`pt run --raw "web-app-add{packages: 'react-query'}"`
+
+Multiple packages
+`pt run --raw "frontend-add{packages: 'axios react-query'}"`
 
 **IMPORTANT:** 
 - Do NOT specify package versions unless specifically requested by the user

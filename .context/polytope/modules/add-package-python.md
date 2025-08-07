@@ -6,9 +6,7 @@ This module adds Python packages to a Python component using uv package manager.
 
 Use the uv-add Polytope module to install packages via:
 
-```bash
-pt run --raw "uv-add{packages: '<packages>', component-path: '<component-path>'}"
-```
+`pt run --raw "uv-add{packages: '<packages>', component-path: '<component-path>'}"`
 
 ### Parameters
 
@@ -16,17 +14,16 @@ pt run --raw "uv-add{packages: '<packages>', component-path: '<component-path>'}
 - `component-path`: The relative path of the component's root directory.
 
 ### Examples
+The following commands need to be executed in the terminal.
 
-```bash
-# Add a single package
-pt run --raw "uv-add{packages: 'fastapi', component-path: 'api'}"
+Add a single package
+`pt run --raw "uv-add{packages: 'fastapi', component-path: 'api'}"`
 
-# Add multiple packages
-pt run --raw "uv-add{packages: 'fastapi,uvicorn', component-path: 'api'}"
+Add multiple packages
+`pt run --raw "uv-add{packages: 'fastapi,uvicorn', component-path: 'api'}"`
 
-# Add packages with specific versions
-pt run --raw "uv-add{packages: 'fastapi==0.104.1,uvicorn==0.24.0', component-path: 'api'}"
-```
+Add packages with specific versions
+`pt run --raw "uv-add{packages: 'fastapi==0.104.1,uvicorn==0.24.0', component-path: 'api'}"`
 
 ## Requirements
 

@@ -5,15 +5,15 @@
 When building real-time applications with FastAPI, WebSockets, and background message processing (e.g., Kafka consumers), you MUST properly integrate background threads with the main async event loop.
 
 ### ❌ WRONG: Using asyncio.run() in Background Threads
-```python
+<code language="python">
 # This creates an isolated event loop that cannot communicate with FastAPI's main loop
 def background_thread():
     for message in consumer:
         asyncio.run(websocket_manager.broadcast(message))  # WRONG!
-```
+</code>
 
 ### ✅ CORRECT: Using asyncio.run_coroutine_threadsafe()
-```python
+<code language="python">
 # Global reference to main event loop
 main_loop = None
 
@@ -33,12 +33,12 @@ def start_background_processing():
     main_loop = asyncio.get_event_loop()
     thread = threading.Thread(target=background_thread, daemon=True)
     thread.start()
-```
+</code>
 
 ## WebSocket Connection Management
 
 ### Safe Broadcasting with Connection Cleanup
-```python
+<code language="python">
 class ConnectionManager:
     def __init__(self):
         self.active_connections: List[WebSocket] = []
@@ -58,10 +58,10 @@ class ConnectionManager:
         for connection in connections_to_remove:
             if connection in self.active_connections:
                 self.active_connections.remove(connection)
-```
+</code>
 
 ### Lazy Background Service Initialization
-```python
+<code language="python">
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     # Start background services only when first WebSocket connects
@@ -75,12 +75,12 @@ async def websocket_endpoint(websocket: WebSocket):
                 await websocket.send_text("pong")
     except WebSocketDisconnect:
         manager.disconnect(websocket)
-```
+</code>
 
 ## Message Queue Integration Patterns
 
 ### Kafka Consumer with WebSocket Broadcasting
-```python
+<code language="python">
 def kafka_consumer_thread():
     """Consume from Kafka and broadcast via WebSocket"""
     while True:
@@ -104,10 +104,10 @@ def kafka_consumer_thread():
         except Exception as e:
             logger.error(f"Kafka consumer error: {e}")
             time.sleep(5)  # Retry after delay
-```
+</code>
 
 ### Resilient Message Publishing
-```python
+<code language="python">
 @router.post("/messages")
 async def create_message(message: MessageCreate):
     # 1. Store data first (resilient pattern)
@@ -124,7 +124,7 @@ async def create_message(message: MessageCreate):
         # Don't fail the request - message is already stored
     
     return stored_message
-```
+</code>
 
 ## Common Mistakes to Avoid
 

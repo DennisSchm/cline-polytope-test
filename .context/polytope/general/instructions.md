@@ -1,14 +1,14 @@
 # Instructions to follow when generating code that should run on Polytope
 ## NEVER use pt.value - ALWAYS use pt.param instead!
-**CRITICAL**: pt.value requires users to manually set values in a separate step, which is error-prone and inconvenient.
+**CRITICAL**: `pt.value` requires users to manually set values in a separate step, which is error-prone and inconvenient.
  
 ❌ **WRONG**:
-```yml
+<code language="yml">
 env: [{ name: RPK_BROKERS, value: "{pt.value redpanda-host}:{pt.value redpanda-port}" }]
-```
+</code>
 
 ✅ **CORRECT**:
-```yml
+<code language="yml">
 params:
   - id: redpanda-host
     type: [default, str, redpanda]
@@ -16,13 +16,13 @@ params:
     type: [default, int, 9092]
 # ...
 env: [{ name: RPK_BROKERS, value: "{pt.param redpanda-host}:{pt.param redpanda-port}" }]
-```
+</code>
 
 Values are global state shared between all runs. ALWAYS declare module params and use `pt.param` instead!
 For secrets, DO use `pt.secret` - but then you'll have to tell the user to set the secret via `pt secret set <secret-name> <value>` before running Polytope.
 
 ## Consice template section
-Make the template section of the polytope.yml file as short as possible. Define modules under the modules section or use pre-existing Polytope modules and refer to them from the template run section.
+Make the template section of the `polytope.yml` file as short as possible. Define modules under the modules section or use pre-existing Polytope modules and refer to them from the template run section.
 
 Keep names simple, and don't set other ids in templates unless you have multiple calls to the same module.
 
@@ -45,21 +45,21 @@ The Polytope service hostnames that are accessible internally within a template 
 Services that use `polytope/container` BLOCK until the container shuts down. Using `after` would mean waiting forever!
 
 ❌ **WRONG**:
-```yml
+<code language="yaml">
 run:
   - redpanda
   - module: api
     run-when:
       after: redpanda  # This will wait forever!
-```
+</code>
 
 ✅ **CORRECT**:
-```yml
+<code language="yaml">
 run:
   - redpanda
   - api  # Runs concurrently!
   - frontend  # All services start together
-```
+</code>
 
 All services must be fault-tolerant and handle connection failures gracefully with retries.
 
@@ -76,15 +76,15 @@ Ensure that all files to be executed are executable.
 **CRITICAL**: Services like databases, message queues, and caches MUST have persistent volumes or data will be lost on restart.
 
 ❌ **WRONG**:
-```yml
+<code language="yaml">
 templates:
   - id: stack
     run:
       - polytope/redpanda  # NO! Data will be lost!
-```
+</code>
 
 ✅ **CORRECT**:
-```yml
+<code language="yaml">
 modules:
   - id: redpanda
     module: polytope/redpanda
@@ -98,20 +98,20 @@ templates:
   - id: stack
     run:
       - redpanda  # Uses your wrapper with volume
-```
+</code>
 
 ## Module inheritance
 Try to stick to the built-in modules. If there's no suitable module for what you're trying to achieve, create a custom module that calls `polytope/container`. 
 
 You can also call modules from `polytope.yml` files in subprojects by making use of the `include` keyword in the polytope file in the root like this: 
 
-```yml
+<code language="yaml">
 include: [
   path/to/subproject/polytope/file
 ]
 modules:
 ...
-```
+</code>
 
 ## Polytope file layout
 Prefer creating modules for the different execution units of your application, e.g. redpanda, etc.
@@ -131,7 +131,7 @@ Be aware that the generated component directories will already contain their own
 Want to create a test script? Put it in a separate directory and create a module for it (is it a shell script? just use `polytope/container` with `image: alpine` or whatever). Ditto for any other runnable units of code!
 
 If you have different commands in your app, create corresponding run scripts in `bin/` and create a specialized module, e.g.:
-```yml
+<code language="yaml">
 modules:
   - id: api
     module: polytope/python
@@ -151,4 +151,4 @@ modules:
   - id: api-ipython
     module: api
     params: {cmd: "bin/ipython"}
-```
+</code>

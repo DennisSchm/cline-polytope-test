@@ -11,9 +11,7 @@ The cillers-init image handles:
 
 ## Docker Image
 The published Docker image is available at:
-```
-us-central1-docker.pkg.dev/arched-inkwell-420116/cillers-repo/cillers-init:latest
-```
+`us-central1-docker.pkg.dev/arched-inkwell-420116/cillers-repo/cillers-init:latest`
 
 ## Basic Configuration
 ### Module structure in polytope.yml
@@ -59,13 +57,13 @@ The cillers-init module requires configuration files mounted at `/conf/init`:
 ### ./conf/init/env.yaml
 Define the environments your application supports, e.g.:
 
-<file path="./conf/init/env.yaml">
+<code language="yaml" path="./conf/init/env.yaml">
 environments:
   - dev
   - test
   - staging
   - prod
-</file>
+</code>
 
 ### Service-Specific Configuration Files
 - `./conf/init/couchbase.yaml`: Bucket, scope, and collection definitions (see couchbase.md)

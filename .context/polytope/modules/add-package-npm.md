@@ -6,9 +6,9 @@ This module adds npm packages to a Node.js component using yarn with the `--no-i
 
 Use the add-package-npm Polytope module to install packages via:
 
-```bash
+<code language="bash">
 pt run --raw "add-package-npm{packages: '<packages>', component-path: '<component-path>'}"
-```
+</code>
 
 ### Parameters
 
@@ -16,17 +16,16 @@ pt run --raw "add-package-npm{packages: '<packages>', component-path: '<componen
 - `component-path`: The relative path of the component's root directory.
 
 ### Examples
+The following commands need to be executed in the terminal.
 
-```bash
-# Add a single package
-pt run --raw "add-package-npm{packages: 'react', component-path: 'frontend'}"
+Add a single package
+`pt run --raw "add-package-npm{packages: 'react', component-path: 'frontend'}"`
 
-# Add multiple packages
-pt run --raw "add-package-npm{packages: 'react react-dom', component-path: 'frontend'}"
+Add multiple packages
+`pt run --raw "add-package-npm{packages: 'react react-dom', component-path: 'frontend'}"`
 
-# Add packages with specific versions
-pt run --raw "add-package-npm{packages: 'react@18.2.0 react-dom@18.2.0', component-path: 'frontend'}"
-```
+Add packages with specific versions
+`pt run --raw "add-package-npm{packages: 'react@18.2.0 react-dom@18.2.0', component-path: 'frontend'}"`
 
 ## Requirements
 

@@ -2,7 +2,7 @@ This file contains module definitions for some built-in Polytope modules. Use th
 
 # polytope/redpanda
 
-```yml
+<code language="yaml">
 info: Runs a single Redpanda node in dev mode.
 id: redpanda
 params:
@@ -58,11 +58,11 @@ args:
     - {port: 8081, protocol: http, label: schema-registry}
     - {port: 9644, protocol: http, label: admin-api}
     - {port: 33145, protocol: tcp, label: rpc}
-```
+</code>
 
 # polytope/redpanda!console
 
-```yml
+<code language="yaml">
 info: Runs the Redpanda console.
 id: console
 params:
@@ -158,12 +158,11 @@ args:
   - id: redpanda-console
     ports:
     - {port: pt.param port, protocol: http}
-
-```
+</code>
 
 # polytope/redpanda!connect
 
-```yml
+<code language="yaml">
 info: Runs Redpanda connect.
 id: connect
 params:
@@ -199,11 +198,11 @@ args:
   - id: redpanda-connect
     ports:
     - {port: pt.param port, protocol: http}
-```
+</code>
 
 # polytope/postgres
 
-```yml
+<code language="yaml">
 info: Runs a PostgreSQL container.
 id: postgres
 params:
@@ -268,11 +267,11 @@ args:
   - id: pt.param service-id
     ports:
     - {protocol: tcp, port: 5432}
-```
+</code>
 
 # polytope/postgres!simple
 
-```yml
+<code language="yaml">
 info: Runs a PostgreSQL container with minimal configuration.
 id: simple
 params:
@@ -316,11 +315,11 @@ args:
   - id: postgres
     ports:
     - {protocol: tcp, port: 5432}
-```
+</code>
 
 # polytope/python
 
-```yml
+<code language="yaml">
 info: Runs a Python container.
 id: python
 params:
@@ -404,11 +403,11 @@ args:
      (:mounts params)))
   restart: pt.param restart
   workdir: /app
-```
+</code>
 
 # polytope/python!simple
 
-```yml
+<code language="yaml">
 info: Runs a Python container with minimal configuration.
 id: simple
 params:
@@ -453,11 +452,11 @@ args:
      (when-let [reqs (:requirements params)]
       [{:path "/requirements", :source reqs}])))
   workdir: /app
-```
+</code>
 
 # polytope/container
 
-```yml
+<code language="yaml">
 info: Runs a Docker container.
 id: container
 params:
@@ -579,11 +578,11 @@ code: |-
        :path         path
        :type         "container-path"}
        sink)))
-```
+</code>
 
 # polytope/node
 
-```yml
+<code language="yaml">
 info: Runs a Node.js container.
 id: node
 params:
@@ -668,4 +667,4 @@ args:
      (:mounts params)))
   restart: pt.param restart
   workdir: /app
-```
+</code>

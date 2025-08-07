@@ -68,7 +68,7 @@ GLOBAL OPTIONS
 ## Secrets and values are dereferenced in the polytope.yml file as follows
 
 The value of a map pair can be specified as the data for a value or a secret. E.g. 
-
+<code language="yaml">
 modules: 
     ...
 
@@ -100,6 +100,7 @@ modules:
     args: 
       ...
       cmd: "topic create {pt.value redpanda-topics}"
+</code>
           
 
         
@@ -111,4 +112,3 @@ set commands for all values and secrets that are referenced in the polytope.yml 
 This enables the user to execute that file to set all values and secrets when initializing the project on a new machine. 
 
 Make sure the .secrets_and_values.sh file pattern is added to the .gitignore file, so the user can store real secrets and local variables that should not be checked in in that file.
-
