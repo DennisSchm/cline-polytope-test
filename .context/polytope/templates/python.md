@@ -75,12 +75,40 @@ Multiple packages
 1. Update the main polytope.yml to include the generated component's polytope.yml file using the `include` directive
 2. Customize the generated code files to implement the specific functionality required
 3. Update configuration files as needed
+4. **CRITICAL**: Ensure the main.py has a proper `main()` function that matches the entry point in pyproject.toml
 </post_generation>
+
+<uvicorn_configuration>
+<section_title>Uvicorn Configuration for FastAPI</section_title>
+When using uvicorn with reload mode, use import string format:
+
+```python
+def main():
+    import uvicorn
+    from .conf import get_http_conf
+    
+    http_conf = get_http_conf()
+    
+    if http_conf.autoreload:
+        uvicorn.run("api.main:app", host=http_conf.host, port=http_conf.port, reload=True)
+    else:
+        uvicorn.run(app, host=http_conf.host, port=http_conf.port, reload=False)
+```
+</uvicorn_configuration>
 
 <recommended_packages>
 <section_title>Specific packages to use</section_title>
 For api servers, use fastapi with uvicorn.
 
 For real-time applications with WebSockets and message queues, see the **Real-time Application Patterns** guide in `.context/polytope/templates/realtime-patterns.md` for critical event loop integration patterns.
+
+<sqlalchemy_usage>
+**CRITICAL**: When using SQLAlchemy 2.0+, always wrap raw SQL strings with `text()`:
+```python
+from sqlalchemy import text
+conn.execute(text("SELECT 1"))  # CORRECT
+conn.execute("SELECT 1")        # WRONG - causes ObjectNotExecutableError
+```
+</sqlalchemy_usage>
 </recommended_packages>
 </instructions>
