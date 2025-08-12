@@ -21,9 +21,7 @@ LOG_LEVEL = EnvVarSpec(id="LOG_LEVEL", default="INFO")
 ## HTTP ##
 
 HTTP_HOST = EnvVarSpec(id="HTTP_HOST", default="0.0.0.0")
-
 HTTP_PORT = EnvVarSpec(id="HTTP_PORT", default="8000")
-
 HTTP_AUTORELOAD = EnvVarSpec(
     id="HTTP_AUTORELOAD",
     parse=lambda x: x.lower() == "true",

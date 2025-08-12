@@ -1,0 +1,34 @@
+modules:
+  - id: init-couchbase
+    params: 
+      - id: couchbase-username
+        type: [default, str, user]  
+      - id: couchbase-password
+        type: [default, str, password] 
+    module: polytope/python
+    args:
+      image: gcr.io/arched-inkwell-420116/python:3.11.8-slim-bookworm
+      id: init-couchbase
+      code: { type: host, path: {{ path }}/init-couchbase }
+      cmd: ./bin/run
+      restart: { policy: on-failure }
+      env:
+        - { name: COUCHBASE_HOST, value: couchbase }
+        - { name: COUCHBASE_BUCKET_NAME, value: main }
+        - { name: COUCHBASE_USERNAME, value: pt.param couchbase-username }
+        - { name: COUCHBASE_PASSWORD, value: pt.param couchbase-password }
+      mounts:
+        - { path: /root/.cache/, source: { type: volume, scope: project, id: dependency-cache }}
+
+  - id: couchbase
+    module: polytope/couchbase
+    args:
+      image: gcr.io/arched-inkwell-420116/couchbase:enterprise-7.6.1
+      data-volume: { type: volume, scope: project, id: couchbase-data }
+
+templates:
+  - id: couchbase-stack
+    info: Full-stack real-time messaging application with React frontend, FastAPI backend, and Couchbase database
+    run:
+      - init-couchbase
+      - couchbase
