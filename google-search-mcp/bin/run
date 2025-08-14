@@ -1,0 +1,5 @@
+#!/bin/sh
+
+. "$(dirname "$0")/init"
+
+exec uv run --active python server.py

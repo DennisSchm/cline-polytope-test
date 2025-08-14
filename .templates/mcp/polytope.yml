@@ -1,0 +1,71 @@
+modules:
+  - id: {{ project-name }}
+    info: "'Base' module for other modules in this file to build on."
+    module: polytope/python
+    params:
+      - id: cmd
+        info: The command to run
+        type: [default, str, ./bin/run]
+      - id: dev-mode
+        info: Whether to run in dev mode (with hot reload, debugging)
+        type: [default, bool, true]
+      - id: port
+        info: The port the API will run on
+        type: [default, int, 3030]
+      - id: restart-policy
+        info: Restart policy for the container.
+        type: [default, [enum, always, on-failure], always]
+      - id: id
+        info: The container ID to use.
+        type: [default, str, {{ project-name }}]
+    args:
+      id: pt.param id
+      image: astral/uv:python3.13-alpine
+      code: { type: host, path: {{ path }} }
+      cmd: pt.param cmd
+      restart:
+        policy: pt.param restart-policy
+      services: |-
+        #pt-js
+        params.cmd === "./bin/run"
+          ? [{ id: "{{ project-name }}", ports: [{ protocol: "http", port: params.port, 'expose-as': params.port }] }]
+          : null;
+      env:
+        - { name: HTTP_AUTORELOAD, value: pt.param dev-mode }
+        - { name: HTTP_PORT, value: pt.param port }
+        - { name: LOG_LEVEL, value: INFO }
+      mounts:
+        - { path: /root/.cache/, source: { type: volume, scope: project, id: {{ project-name | kebab_case}}-dependency-cache } }
+
+  - id: {{ project-name }}-add
+    info: Adds one or more packages to the pyproject.toml file.
+    module: {{ project-name }}
+    params:
+      - id: packages
+        info: comma/whitespace-separated list of python packages to add to pyproject.toml
+        type: str
+    args:
+      id: {{ project-name }}-add
+      restart-policy: on-failure
+      cmd: '#pt-js "uv add --no-progress " + params.packages.replace(/[\s,]+/g, " ")'
+
+  - id: mcp-inspector
+    module: polytope/container
+    env:
+      - { name: HOST, value: 0.0.0.0 }
+      - { name: DANGEROUSLY_OMIT_AUTH, value: true }
+    args:
+      id: mcp-inspector
+      image: squishyu/bun-alpine:1.2.20
+      cmd: bun x @modelcontextprotocol/inspector
+      services: [{ id: mcp-inspector, ports: [{ protocol: "http", port: 6274, 'expose-as': 6274 },{ protocol: "http", port: 6277, 'expose-as': 6277 }] }]
+      mounts:
+        - { path: /root/.cache/, source: { type: volume, scope: project, id: mcp-inspector-home-cache }}
+        - { path: /root/.bun/, source: { type: volume, scope: project, id: mcp-inspector-bun-cache }}
+        
+templates:
+  - id: mcp-stack
+    info: MCP stack for {{ project-name }}.
+    run:
+      - mcp-inspector
+      - {{ project-name }}
